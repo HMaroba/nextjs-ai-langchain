@@ -19,7 +19,7 @@ export default function Chat() {
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight
     }
-  }, [scrollAreaRef]) // Updated dependency
+  }, [messages]) // Update when messages change
 
   // Handle form submission
   const handleSubmit = async (e: FormEvent) => {
@@ -32,12 +32,17 @@ export default function Chat() {
     setIsLoading(true)
 
     try {
-      const response = await fetch("/api/openai", {
+      const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({
+          messages: [...messages, userMessage].map((msg) => ({
+            role: msg.role,
+            content: msg.content,
+          })),
+        }),
       })
 
       if (!response.ok) {
@@ -45,10 +50,9 @@ export default function Chat() {
       }
 
       const data = await response.json()
-      console.log(data)
       const aiMessage: Message = {
         role: "assistant",
-        content: data.content,
+        content: data.content || data.text || "I processed your request.",
       }
       setMessages((prevMessages) => [...prevMessages, aiMessage])
     } catch (error) {
@@ -65,10 +69,10 @@ export default function Chat() {
 
   return (
     <div className="flex flex-col h-screen max-w-2xl mx-auto p-4 bg-white">
-      <h1 className="text-2xl font-bold mb-4 text-center text-gray-800 ">AI Chat Assistant</h1>
+      <h1 className="text-2xl font-bold mb-4 text-center text-gray-800">US States Information Assistant</h1>
       <div
         ref={scrollAreaRef}
-        className="flex-grow mb-4 p-4 rounded-lg border border-gray-200  bg-gray-50  overflow-y-auto"
+        className="flex-grow mb-4 p-4 rounded-lg border border-gray-200 bg-gray-50 overflow-y-auto"
       >
         {messages.map((message, index) => (
           <div key={index} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} mb-4`}>
@@ -104,8 +108,8 @@ export default function Chat() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Type your message..."
-          className="flex-grow p-2 rounded-lg border border-gray-300  bg-white  text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+          placeholder="Ask about US states..."
+          className="flex-grow p-2 rounded-lg border border-gray-300 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
         />
         <button
           type="submit"
@@ -119,3 +123,4 @@ export default function Chat() {
     </div>
   )
 }
+
