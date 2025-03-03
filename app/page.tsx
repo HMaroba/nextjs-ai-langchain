@@ -2,7 +2,6 @@
 
 import { useState, type FormEvent, useRef, useEffect } from "react"
 import { Send, Loader2 } from "lucide-react"
-import { log } from "console"
 
 // Define the structure of the message object
 interface Message {
@@ -78,13 +77,6 @@ export default function Chat() {
                 message.role === "user" ? "flex-row-reverse" : "flex-row"
               }`}
             >
-              {/* <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
-                <img
-                  src={message.role === "user" ? "/user-avatar.png" : "/ai-avatar.png"}
-                  alt={message.role === "user" ? "User" : "AI Assistant"}
-                  className="w-full h-full object-cover"
-                />
-              </div> */}
               <div
                 className={`p-3 rounded-lg ${
                   message.role === "user"
@@ -100,9 +92,6 @@ export default function Chat() {
         {isLoading && (
           <div className="flex justify-start mb-4">
             <div className="flex items-center gap-2 max-w-[80%]">
-              <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
-                <img src="/ai-avatar.png" alt="AI Assistant" className="w-full h-full object-cover" />
-              </div>
               <div className="p-3 rounded-lg bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
                 <Loader2 className="h-4 w-4 animate-spin" />
               </div>
